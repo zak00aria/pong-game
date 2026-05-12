@@ -12,6 +12,17 @@ struct Game game = {
   .score = {0, 0},
 };
 
+struct Game_tones game_tones = {
+  .pad_hit = play_pad_hit_sound,
+  .border_hit = play_border_hit_sound,
+  .computer_score = play_computer_score_sound,
+  .player_score = play_player_score_sound,
+  .win = play_win_sound,
+  .lost = play_lost_sound,
+  .key_press = play_key_press_sound,
+  .select_key_press = play_select_key_press_sound,
+};
+
 struct Game_mode_constraints game_modes_constraints[3] = {
   {
     .ball_speed_x = 3,
@@ -223,17 +234,13 @@ void update_game(void)
     {
       game.score[1] += 1;
       sprintf(player_score, "%d", game.score[1]);
-      play_tone(1200, 40);
-      play_tone(1500, 40);
-      play_tone(1800, 40);
+      game_tones.player_score();
     }
     else
     {
       game.score[0] += 1;
       sprintf(computer_score, "%d", game.score[0]);
-      play_tone(400, 40);
-      play_tone(300, 40);
-      play_tone(200, 40);
+      game_tones.computer_score();
     }
     ball.x = screen.width >> 1;
     ball.y = screen.height >> 1;
@@ -251,7 +258,7 @@ void update_game(void)
       ball.speed_x = -ball.speed_x;
       // decide ball direction on y axis
       ball.speed_y = get_ball_reflect_angle(&player_pad);
-      play_tone(400, 20);
+      game_tones.pad_hit();
     }
   }
 
@@ -266,7 +273,7 @@ void update_game(void)
       ball.speed_x = -ball.speed_x;
       // decide ball direction on y axis
       ball.speed_y = get_ball_reflect_angle(&computer_pad);
-      play_tone(400, 20);
+      game_tones.pad_hit();
     }
   }
 
@@ -274,7 +281,7 @@ void update_game(void)
   if (ball.y + ball.size >= screen.height - 1 || ball.y < 1)
   {
     ball.speed_y = -ball.speed_y;
-    play_tone(300, 20);
+    game_tones.border_hit();
   }
 }
 
@@ -284,6 +291,7 @@ void menu_go_up(struct Menu *menu)
   if (menu->selected_action_index >= 1)
   {
     --menu->selected_action_index;
+    game_tones.key_press();
   }
 }
 
@@ -292,12 +300,14 @@ void menu_go_down(struct Menu *menu)
   if (menu->selected_action_index < menu->actions_count - 1)
   {
     ++menu->selected_action_index;
+    game_tones.key_press();
   }
 }
 
 void menu_select_action(struct Menu *menu)
 {
   menu->actions[menu->selected_action_index].action();
+  game_tones.select_key_press();
 }
 
 void main_menu_go_up(void)
@@ -436,6 +446,7 @@ void update_end_game_menu(void)
 void pause_game(void) {
   game.is_state_initialized = 0;
   game.state = PAUSED;
+  game_tones.select_key_press();
 }
 
 void continue_game(void) {
@@ -567,4 +578,43 @@ void play_tone(uint32_t freq, uint32_t dur)
     .dur = dur,
   };
   xQueueSend(tones_queue_handle, &tone, 0);
+}
+
+void play_pad_hit_sound()
+{
+  play_tone(400, 20);
+}
+void play_border_hit_sound()
+{
+  play_tone(300, 20);
+}
+void play_computer_score_sound()
+{
+  play_tone(400, 40);
+  play_tone(300, 40);
+  play_tone(200, 40);
+}
+void play_player_score_sound()
+{
+  play_tone(1200, 40);
+  play_tone(1500, 40);
+  play_tone(1800, 40);
+}
+void play_win_sound()
+{
+  play_tone(1800, 40);
+}
+void play_lost_sound()
+{
+  play_tone(200, 40);
+}
+void play_key_press_sound()
+{
+  play_tone(1000, 10);
+}
+void play_select_key_press_sound()
+{
+  play_tone(700, 10);
+  play_tone(1200, 10);
+  play_tone(700, 10);
 }

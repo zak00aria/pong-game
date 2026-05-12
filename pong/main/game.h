@@ -52,6 +52,17 @@ struct Tone {
   uint32_t dur;
 };
 
+struct Game_tones {
+  void (*pad_hit)(void);
+  void (*border_hit)(void);
+  void (*computer_score)(void);
+  void (*player_score)(void);
+  void (*win)(void);
+  void (*lost)(void);
+  void (*key_press)(void);
+  void (*select_key_press)(void);
+};
+
 struct Ball {
   uint8_t size;
   uint8_t x;
@@ -70,6 +81,7 @@ struct Pad {
 };
 
 extern struct Game game;
+extern struct Game_tones game_tones;
 extern struct Tone tones_queue[10];
 extern QueueHandle_t tones_queue_handle;
 
@@ -110,5 +122,14 @@ void move_computer_pad_hard(void);
 int8_t get_ball_reflect_angle(struct Pad *pad);
 
 void play_tone(uint32_t freq, uint32_t dur);
+
+void play_pad_hit_sound(void);
+void play_border_hit_sound(void);
+void play_computer_score_sound(void);
+void play_player_score_sound(void);
+void play_win_sound(void);
+void play_lost_sound(void);
+void play_key_press_sound(void);
+void play_select_key_press_sound(void);
 
 #endif

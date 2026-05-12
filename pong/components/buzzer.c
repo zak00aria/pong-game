@@ -33,5 +33,4 @@ void make_tone(uint32_t freq, uint32_t dur)
   vTaskDelay(dur / portTICK_PERIOD_MS);
   ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
   ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-  vTaskDelay(10 / portTICK_PERIOD_MS);
 }
