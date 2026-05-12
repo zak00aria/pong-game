@@ -3,6 +3,8 @@
 #define BALL_REFLECT_ANGLES_LENGTH 7
 int8_t ball_reflect_angles[BALL_REFLECT_ANGLES_LENGTH] = {-5, -2, -1, 0, 1, 2, 5};
 
+int16_t dist_y = 0;
+
 QueueHandle_t tones_queue_handle = NULL;
 
 struct Game game = {
@@ -490,14 +492,41 @@ void start_game_hard_mode (void)
   start_game(HARD);
 }
 
+void move_pad_up(struct Pad *pad)
+{
+  if (pad->y >= pad->speed_y)
+    pad->y -= pad->speed_y;
+  else
+    computer_pad.y = 0;
+}
+
+void move_pad_down(struct Pad *pad)
+{
+  if (screen.height - pad->y - pad->height - 1 >= pad->speed_y)
+    pad->y += pad->speed_y;
+  else
+    pad->y = screen.height - pad->height - 1;
+}
+
+float get_line_point_y(uint8_t x, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
+{
+  float a = (float)(y2 - y1) / (x2 - x1);
+  float b = y1 - a * x1;
+  return (float)(a * x + b);
+}
+
 void move_computer_pad_easy (void)
 {
   if (ball.speed_x < 0 && ball.x <= screen.width >> 1)
   {
-    if (ball.y > computer_pad.y + computer_pad.height && computer_pad.y + computer_pad.height  < screen.height - 1)
-      computer_pad.y += computer_pad.speed_y;
-    else if (ball.y + ball.size < computer_pad.y && computer_pad.y > 0)
-      computer_pad.y -= computer_pad.speed_y;
+    dist_y = get_line_point_y(computer_pad.x + computer_pad.width, ball.x - ball.speed_x, ball.y - ball.speed_y, ball.x, ball.y);
+    dist_y += - (computer_pad.height >> 1) + ((player_pad.y + (player_pad.height >> 1) > (screen.height >> 1)) ? ((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1) : -((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1));
+    if (dist_y < 0 || dist_y > screen.height + 1)
+      dist_y = screen.height >> 1;
+    if (dist_y > computer_pad.y && computer_pad.y + computer_pad.height  < screen.height - 1)
+      move_pad_down(&computer_pad);
+    else if (dist_y < computer_pad.y && computer_pad.y > 0)
+      move_pad_up(&computer_pad);
   }
 }
 
@@ -505,10 +534,14 @@ void move_computer_pad_medium (void)
 {
   if (ball.speed_x < 0)
   {
-    if (ball.y > computer_pad.y + computer_pad.height && computer_pad.y + computer_pad.height  < screen.height - 1)
-      computer_pad.y += computer_pad.speed_y;
-    else if (ball.y + ball.size < computer_pad.y && computer_pad.y > 0)
-      computer_pad.y -= computer_pad.speed_y;
+    dist_y = get_line_point_y(computer_pad.x + computer_pad.width, ball.x - ball.speed_x, ball.y - ball.speed_y, ball.x, ball.y);
+    dist_y += - (computer_pad.height >> 1) + ((player_pad.y + (player_pad.height >> 1) > (screen.height >> 1)) ? ((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1) : -((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1));
+    if (dist_y < 0 || dist_y > screen.height + 1)
+      dist_y = ball.y;
+    if (dist_y > computer_pad.y && computer_pad.y + computer_pad.height  < screen.height - 1)
+      move_pad_down(&computer_pad);
+    else if (dist_y < computer_pad.y && computer_pad.y > 0)
+      move_pad_up(&computer_pad);
   }
 }
 
@@ -516,16 +549,20 @@ void move_computer_pad_hard(void)
 {
   if (ball.speed_x < 0)
   {
-    if (ball.y > computer_pad.y + computer_pad.height && computer_pad.y + computer_pad.height  < screen.height - 1)
-      computer_pad.y += computer_pad.speed_y;
-    else if (ball.y + ball.size < computer_pad.y && computer_pad.y > 0)
-      computer_pad.y -= computer_pad.speed_y;
+    dist_y = get_line_point_y(computer_pad.x + computer_pad.width, ball.x - ball.speed_x, ball.y - ball.speed_y, ball.x, ball.y);
+    dist_y += - (computer_pad.height >> 1) + ((player_pad.y + (player_pad.height >> 1) > (screen.height >> 1)) ? ((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1) : -((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1));
+    if (dist_y < 0 || dist_y > screen.height + 1)
+      dist_y = ball.y;
+    if (dist_y > computer_pad.y && computer_pad.y + computer_pad.height  < screen.height - 1)
+      move_pad_down(&computer_pad);
+    else if (dist_y < computer_pad.y && computer_pad.y > 0)
+      move_pad_up(&computer_pad);
     return;
   }
   if (computer_pad.y + (computer_pad.height >> 1) > screen.height >> 1)
-    computer_pad.y -= computer_pad.speed_y;
+    move_pad_up(&computer_pad);
   else if (computer_pad.y + (computer_pad.height >> 1) < screen.height >> 1)
-    computer_pad.y += computer_pad.speed_y;
+    move_pad_down(&computer_pad);
 }
 
 int8_t get_ball_reflect_angle(struct Pad *pad)
