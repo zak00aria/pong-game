@@ -6,7 +6,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-#include "../components/ssd1306.h"
+#include "ssd1306.h"
 #include "../components/inputs.h"
 #include "../components/buzzer.h"
 

@@ -4,7 +4,7 @@
 #include "freertos/task.h"
 #include "driver/i2c.h"
 
-#include "../components/ssd1306.h"
+#include "ssd1306.h"
 #include "../components/inputs.h"
 #include "../components/buzzer.h"
 #include "tasks.h"

@@ -4,7 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "../components/ssd1306.h"
+#include "ssd1306.h"
 #include "../components/inputs.h"
 #include "game.h"
 

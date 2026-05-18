@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "driver/i2c.h"
-#include "i2c_utils.h"
+#include "../i2c_utils.h"
 #include "font.h"
 
 #define SSD1306_DISPLAY_OFF_CMD 0xAE
