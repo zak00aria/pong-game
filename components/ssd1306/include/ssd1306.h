@@ -13,7 +13,7 @@
 #define SSD1306_DISPLAY_ON_CMD  0xAF
 
 enum Text_align {
-  LEFT = 0,
+  LEFT = 1,
   CENTER,
 };
 
@@ -54,6 +54,6 @@ void draw_horizental_line(uint8_t x, uint8_t y, uint8_t w, uint8_t color);
 void draw_vertical_line(uint8_t x, uint8_t y, uint8_t w, uint8_t color);
 void draw_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color);
 void fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color);
-void draw_text(uint8_t x, uint8_t y, char *text, uint8_t color, enum Text_align align);
+void draw_text(uint8_t x, uint8_t y, char *text, uint8_t color, enum Text_align align, uint8_t scale);
 
 #endif

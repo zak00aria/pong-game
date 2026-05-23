@@ -126,66 +126,53 @@ void draw_vertical_line(uint8_t x, uint8_t y, uint8_t w, uint8_t color)
 
 void draw_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color)
 {
-  for (uint8_t i = 0; i <= w; i++)
+  for (uint8_t i = 0; i < w; i++)
   {
     draw_pixel(x + i, y, color);
-    draw_pixel(x + i, y + h, color);
+    draw_pixel(x + i, y + h - 1, color);
   }
-  for (uint8_t i = 0; i <= h; i++)
+  for (uint8_t i = 0; i < h; i++)
   {
     draw_pixel(x, y + i, color);
-    draw_pixel(x + w, y + i, color);
+    draw_pixel(x + w - 1, y + i, color);
   }
 }
 
 void fill_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t color)
 {
-  for (uint8_t j = 0; j <= h; j++)
+  for (uint8_t j = 0; j < h; j++)
   {
-    for (uint8_t i = 0; i <= w; i++)
+    for (uint8_t i = 0; i < w; i++)
     {
       draw_pixel(x + i, y + j, color);
     }
   }
 }
 
-void draw_text(uint8_t x, uint8_t y, char *text, uint8_t color, enum Text_align align)
+void draw_text(uint8_t x, uint8_t y, char *text, uint8_t color, enum Text_align align, uint8_t scale)
 {
   uint16_t text_length = 0;
   while (text[text_length])
   {
     ++text_length;
   }
-  uint8_t x_spacing = 1;
+  uint8_t x_spacing = scale;
   uint8_t y_spacing = 1;
   if (align == CENTER)
-    x -= (text_length >> 1) * (5 + x_spacing);
+    x -= ((float)text_length / 2) * ((FONT_W * scale) + x_spacing);
   uint8_t font_char_index = 0;
-  uint8_t (*font_source)[5];
   for (int16_t index = 0; index < text_length; index++)
   {
-    if ((uint8_t)text[index] >= (uint8_t)'0' && (uint8_t)text[index] <= (uint8_t)'9')
+    font_char_index = (uint8_t)text[index];
+    for (uint8_t j = 0; j < FONT_H; j++)
     {
-      font_char_index = (uint8_t)text[index] - (uint8_t)'0';
-      font_source = digits;
-    }
-    else if ((uint8_t)text[index] >= (uint8_t)'A' && (uint8_t)text[index] <= (uint8_t)'Z')
-    {
-      font_char_index = (uint8_t)text[index] - (uint8_t)'A';
-      font_source = letters;
-    }
-    else // font doesn't have a representation for that charecter.
-    {
-      x += x_spacing + 5;
-      continue;
-    }
-    for (uint8_t j = 0; j < 5; j++)
-    {
-      for (uint8_t i = 0; i < 5; i++)
+      for (uint8_t i = 0, pixel ; i < FONT_W; i++)
       {
-        draw_pixel(x + (5 - i), y + j, ((font_source[font_char_index][j] >> i) & 1) ^ !color);
+        pixel = (font[font_char_index][j] >> i) & 1;
+        if (!pixel) continue;
+        fill_rect(x + ((FONT_W - i)*scale), y + (j * scale), scale, scale, pixel ^ !color);
       }
     }
-    x += x_spacing + 5;
+    x += x_spacing + (FONT_W * scale);
   }
 }

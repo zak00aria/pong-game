@@ -168,8 +168,8 @@ void draw_game(void)
   draw_vertical_line(screen.width >> 1, 0, screen.height, 1);
 
   // draw score
-  draw_text((screen.width >> 1) - 20, 6, computer_score, 1, CENTER);
-  draw_text((screen.width >> 1) + 10, 6, player_score, 1, CENTER);
+  draw_text((screen.width >> 1) - 20, 6, computer_score, 1, CENTER, 1);
+  draw_text((screen.width >> 1) + 10, 6, player_score, 1, CENTER, 1);
 
   // draw ball and player/computer pads
   fill_rect(ball.x, ball.y, ball.size, ball.size, 1);
@@ -354,7 +354,7 @@ void end_game_menu_select_action(void)
 void draw_main_menu(void)
 {
   draw_rect(0, 0, screen.width - 1, screen.height - 1, 1);
-  draw_text(screen.width >> 1, 4, main_menu.title, 1, CENTER);
+  draw_text(screen.width >> 1, 4, main_menu.title, 1, CENTER, 1);
   for (uint8_t i = 0; i < main_menu.actions_count; i++)
   {
     uint16_t menu_action_title_length = 0;
@@ -363,8 +363,8 @@ void draw_main_menu(void)
       ++menu_action_title_length;
     }
     if (main_menu.selected_action_index == i)
-      fill_rect((screen.width >> 1) - (((menu_action_title_length + 1) * 6) >> 1), 16 + (i * 11), (menu_action_title_length + 1) * 6, 8, 1);
-    draw_text(screen.width >> 1, 16 + (i * 11) + 2, main_menu.actions[i].title, main_menu.selected_action_index != i, CENTER);
+      fill_rect((screen.width >> 1) - (((menu_action_title_length) * (FONT_W + 1) + 4) >> 1), 16 + (i * 11), (menu_action_title_length) * (FONT_W + 1) + 4, (FONT_H + 4), 1);
+    draw_text(screen.width >> 1, 16 + (i * 11) + 2, main_menu.actions[i].title, main_menu.selected_action_index != i, CENTER, 1);
   }
 }
 
@@ -384,7 +384,7 @@ void update_main_menu(void)
 void draw_pause_menu(void)
 {
   draw_rect(0, 0, screen.width - 1, screen.height - 1, 1);
-  draw_text(screen.width >> 1, 4, pause_menu.title, 1, CENTER);
+  draw_text(screen.width >> 1, 4, pause_menu.title, 1, CENTER, 1);
   for (uint8_t i = 0; i < pause_menu.actions_count; i++)
   {
     uint16_t menu_action_title_length = 0;
@@ -393,8 +393,8 @@ void draw_pause_menu(void)
       ++menu_action_title_length;
     }
     if (pause_menu.selected_action_index == i)
-      fill_rect((screen.width >> 1) - (((menu_action_title_length + 1) * 6) >> 1), 16 + (i * 11), (menu_action_title_length + 1) * 6, 8, 1);
-    draw_text(screen.width >> 1, 16 + (i * 11) + 2, pause_menu.actions[i].title, pause_menu.selected_action_index != i, CENTER);
+      fill_rect((screen.width >> 1) - (((menu_action_title_length) * (FONT_W + 1) + 4) >> 1), 16 + (i * 11), (menu_action_title_length) * (FONT_W + 1) + 4, (FONT_H + 4), 1);
+    draw_text(screen.width >> 1, 16 + (i * 11) + 2, pause_menu.actions[i].title, pause_menu.selected_action_index != i, CENTER, 1);
   }
 }
 
@@ -415,9 +415,9 @@ void draw_end_game_menu(void)
 {
   draw_rect(0, 0, screen.width - 1, screen.height - 1, 1);
   // draw result
-  draw_text((screen.width >> 1) - 5, 8, game.score[0] > game.score[1] ? " YOU LOST" : "YOU WIN", 1, CENTER);
-  draw_text((screen.width >> 1) - 10, 18, computer_score, 1, CENTER);
-  draw_text((screen.width >> 1) + 10, 18, player_score, 1, CENTER);
+  draw_text((screen.width >> 1) - 5, 8, game.score[0] > game.score[1] ? " YOU LOST" : "YOU WIN", 1, CENTER, 1);
+  draw_text((screen.width >> 1) - 10, 18, computer_score, 1, CENTER, 1);
+  draw_text((screen.width >> 1) + 10, 18, player_score, 1, CENTER, 1);
 
   for (uint8_t i = 0; i < end_game_menu.actions_count; i++)
   {
@@ -427,8 +427,8 @@ void draw_end_game_menu(void)
       ++menu_action_title_length;
     }
     if (end_game_menu.selected_action_index == i)
-      fill_rect((screen.width >> 1) - (((menu_action_title_length + 1) * 6) >> 1), 30 + (i * 11), (menu_action_title_length + 1) * 6, 8, 1);
-    draw_text(screen.width >> 1, 30 + (i * 11) + 2, end_game_menu.actions[i].title, end_game_menu.selected_action_index != i, CENTER);
+      fill_rect((screen.width >> 1) - (((menu_action_title_length) * (FONT_W + 1) + 4) >> 1), 30 + (i * 11), (menu_action_title_length) * (FONT_W + 1) + 4, (FONT_H + 4), 1);
+    draw_text(screen.width >> 1, 30 + (i * 11) + 2, end_game_menu.actions[i].title, end_game_menu.selected_action_index != i, CENTER, 1);
   }
 }
 
@@ -522,7 +522,7 @@ void move_computer_pad_easy (void)
     dist_y = get_line_point_y(computer_pad.x + computer_pad.width, ball.x - ball.speed_x, ball.y - ball.speed_y, ball.x, ball.y);
     dist_y += - (computer_pad.height >> 1) + ((player_pad.y + (player_pad.height >> 1) > (screen.height >> 1)) ? ((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1) : -((computer_pad.height / BALL_REFLECT_ANGLES_LENGTH) << 1));
     if (dist_y < 0 || dist_y > screen.height + 1)
-      dist_y = screen.height >> 1;
+      dist_y = ball.y;
     if (dist_y > computer_pad.y && computer_pad.y + computer_pad.height  < screen.height - 1)
       move_pad_down(&computer_pad);
     else if (dist_y < computer_pad.y && computer_pad.y > 0)
